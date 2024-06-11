@@ -1,0 +1,143 @@
+catalogo = {}
+
+def cadastrar_livro(biblioteca, titulo, autor, exemplares_disponiveis):
+    if isinstance(exemplares_disponiveis, str) and exemplares_disponiveis.isdigit():
+        exemplares_disponiveis = int(exemplares_disponiveis)
+        if exemplares_disponiveis > 0:
+            if biblioteca not in catalogo:
+                catalogo[biblioteca] = {}
+            if titulo not in catalogo[biblioteca]:
+                catalogo[biblioteca][titulo] = {}
+            catalogo[biblioteca][titulo] = {
+                "autor": autor,
+                "exemplares_disponiveis": exemplares_disponiveis
+            }
+            print("Parabéns! O livro foi cadastrado com sucesso!")
+        else:
+            print("Forneça um número maior que zero.")
+    else:
+        print("O caractere inserido deve ser um número maior que 0.")
+
+def pesquisar_livro_por_titulo(biblioteca, parte_titulo):
+    parte_titulo = parte_titulo.lower()
+    resultados = []
+
+    if biblioteca in catalogo:
+        for titulo, detalhes in catalogo[biblioteca].items():
+            if parte_titulo in titulo.lower():
+                resultados.append((titulo, detalhes))
+
+        if resultados:
+            for titulo, detalhes in resultados:
+                print(f"Biblioteca: {biblioteca}\nTítulo: {titulo}\nAutor: {detalhes['autor']}\nExemplares disponíveis: {detalhes['exemplares_disponiveis']}\n")
+        else:
+            print("Desculpe! Título não encontrado. Verifique possível erro de digitação.")
+    else:
+        print("Desculpe! Biblioteca não encontrada.")
+
+def pesquisar_livro_por_autor(biblioteca, parte_autor):
+    parte_autor = parte_autor.lower()
+    resultados = []
+
+    if biblioteca in catalogo:
+        for titulo, detalhes in catalogo[biblioteca].items():
+            if parte_autor in detalhes['autor'].lower():
+                resultados.append((titulo, detalhes))
+
+        if resultados:
+            for titulo, detalhes in resultados:
+                print(f"Biblioteca: {biblioteca}\nTítulo: {titulo}\nAutor: {detalhes['autor']}\nExemplares disponíveis: {detalhes['exemplares_disponiveis']}\n")
+        else:
+            print("Desculpe! O autor não foi encontrado. Verifique possível erro de digitação.")
+    else:
+        print("Desculpe! Biblioteca não encontrada.")
+
+def remover_livro(biblioteca, titulo):
+    if biblioteca in catalogo and titulo in catalogo[biblioteca]:
+        del catalogo[biblioteca][titulo]
+        print("Parabéns! O livro foi removido com sucesso!")
+    else:
+        print("Desculpe! Não encontramos seu livro. Verifique se não há erro na digitação.")
+
+def listar_livros():
+    if catalogo:
+        for biblioteca, livros in catalogo.items():
+            print(f"\nBiblioteca: {biblioteca}")
+            titulos_ordenados = sorted(livros.keys())
+            for titulo in titulos_ordenados:
+                livro = livros[titulo]
+                print(f"- {titulo} (Autor: {livro['autor']}, Exemplares disponíveis: {livro['exemplares_disponiveis']})")
+    else:
+        print("Catálogo vazio.")
+
+def alterar_cadastro_livro(biblioteca, titulo_original, titulo_novo, autor_novo, exemplares_novos, opcao):
+    if opcao == '1':
+        if biblioteca in catalogo and titulo_original in catalogo[biblioteca]:
+            if titulo_novo != titulo_original and titulo_novo in catalogo[biblioteca]:
+                print(f"Já existe um livro com o título '{titulo_novo}'.")
+            else:
+                catalogo[biblioteca][titulo_novo] = catalogo[biblioteca].pop(titulo_original)
+                catalogo[biblioteca][titulo_novo]["autor"] = autor_novo
+                catalogo[biblioteca][titulo_novo]["exemplares_disponiveis"] = exemplares_novos
+                print(f"Cadastro do livro '{titulo_original}' alterado para '{titulo_novo}'!")
+        else:
+            print(f"Desculpe! O livro '{titulo_original}' não foi encontrado na biblioteca '{biblioteca}'. Verifique possível erro de digitação.")
+    elif opcao == '2':
+        remover_livro(biblioteca, titulo_original)
+
+def menu():
+    while True:
+        print("\n\033[1m{: ^40}\033[0m".format("Biblioteca Pública Clarice Lispector"))
+        print("{: ^40}".format("O mundo num só lugar"))
+        print("{: ^40}".format("Rua Olegário Maciel 818"))
+        print("{: ^40}".format("Bairro Penha"))
+        print("{: ^40}".format("São Paulo-SP"))
+        print()
+        print("1. Cadastrar livro")
+        print("2. Pesquisar livro por título")
+        print("3. Pesquisar livro por autor")
+        print("4. Alterar cadastro de livro")
+        print("5. Listar livros")
+        print("6. Sair")
+        print()
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == '1':
+            biblioteca = "Biblioteca Pública Clarice Lispector"
+            titulo = input("Título do livro: ")
+            autor = input("Autor do livro: ")
+            exemplares_disponiveis = input("Número de exemplares disponíveis: ")
+            cadastrar_livro(biblioteca, titulo, autor, exemplares_disponiveis)
+        elif opcao == '2':
+            biblioteca = "Biblioteca Pública Clarice Lispector"
+            titulo = input("Título do livro: ")
+            pesquisar_livro_por_titulo(biblioteca, titulo)
+        elif opcao == '3':
+            biblioteca = "Biblioteca Pública Clarice Lispector"
+            autor = input("Autor do livro: ")
+            pesquisar_livro_por_autor(biblioteca, autor)
+        elif opcao == '4':
+            biblioteca = "Biblioteca Pública Clarice Lispector"
+            endereco = "Rua Olegário Maciel 818, Bairro Penha, São Paulo-SP"
+            slogan = "O mundo num só lugar"
+            titulo_original = input("Título original do livro: ")
+            print("1. Alterar cadastro de livro")
+            print("2. Remover livro")
+            sub_opcao = input("Escolha uma opção: ")
+            if sub_opcao == '1':
+                titulo_novo = input("Digite o título do livro: ")
+                autor_novo = input("Digite o nome do autor do livro: ")
+                exemplares_novos = int(input("Qual o número de exemplares disponíveis: "))
+                alterar_cadastro_livro(biblioteca, titulo_original, titulo_novo, autor_novo, exemplares_novos, sub_opcao)
+            elif sub_opcao == '2':
+                alterar_cadastro_livro(biblioteca, titulo_original, None, None, None, sub_opcao)
+            else:
+                print("Por favor, digite uma opção válida.")
+        elif opcao == '5':
+            listar_livros()
+        elif opcao == '6':
+            break
+        else:
+            print("Ops! Essa não é uma opção válida. Verifique o número digitado.")
+
+menu()
